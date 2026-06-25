@@ -32,7 +32,7 @@ from pyspark.sql.window import Window
 logger = logging.getLogger(__name__)
 
 
-# ─── Spark session factory ────────────────────────────────────────────────────
+#   Spark session factory  
 def create_spark_session(app_name: str = "nyc-taxi-transform") -> SparkSession:
     """Create a local Spark session configured for this pipeline."""
     return (
@@ -47,7 +47,7 @@ def create_spark_session(app_name: str = "nyc-taxi-transform") -> SparkSession:
     )
 
 
-# ─── Step 1: Ingest & cast ───────────────────────────────────────────────────
+#   Step 1: Ingest & cast                  
 def read_and_cast(spark: SparkSession, input_path: str):
     """Read raw CSV and enforce schema types."""
     df = (
@@ -73,7 +73,7 @@ def read_and_cast(spark: SparkSession, input_path: str):
     )
 
 
-# ─── Step 2: Filter bad rows ─────────────────────────────────────────────────
+#   Step 2: Filter bad rows                 ─
 def filter_invalid_rows(df):
     """Remove rows that would corrupt downstream analytics."""
     return (
@@ -91,7 +91,7 @@ def filter_invalid_rows(df):
     )
 
 
-# ─── Step 3: Derive features ─────────────────────────────────────────────────
+#   Step 3: Derive features                 ─
 def derive_features(df):
     """Add engineered columns useful for analytics."""
     return (
@@ -141,7 +141,7 @@ def derive_features(df):
     )
 
 
-# ─── Step 4: Zone join ───────────────────────────────────────────────────────
+#   Step 4: Zone join   
 def join_zone_lookup(spark: SparkSession, df):
     """
     Join with TLC taxi zone lookup table to get human-readable zone names.
@@ -182,7 +182,7 @@ def join_zone_lookup(spark: SparkSession, df):
     )
 
 
-# ─── Step 5: Aggregations ────────────────────────────────────────────────────
+#   Step 5: Aggregations  
 def build_zone_aggregates(df):
     """Per-zone daily aggregation — key business metric."""
     return (
@@ -229,7 +229,7 @@ def build_payment_breakdown(df):
     )
 
 
-# ─── Step 6: Write outputs ───────────────────────────────────────────────────
+#   Step 6: Write outputs                  
 def write_parquet(df, output_path: str, partition_by: list[str] = None) -> int:
     """Write DataFrame to Parquet with optional partitioning."""
     writer = df.write.mode("overwrite").format("parquet")
@@ -239,7 +239,7 @@ def write_parquet(df, output_path: str, partition_by: list[str] = None) -> int:
     return df.count()
 
 
-# ─── Main ─────────────────────────────────────────────────────────────────────
+#   Main        
 def main(date: str, input_path: str, output_path: str):
     spark = create_spark_session()
     spark.sparkContext.setLogLevel("WARN")
@@ -272,7 +272,7 @@ def main(date: str, input_path: str, output_path: str):
     df_joined.unpersist()
     spark.stop()
 
-    logger.info("Spark transform complete ✅")
+    logger.info("Spark transform complete  ")
 
 
 if __name__ == "__main__":

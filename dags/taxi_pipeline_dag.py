@@ -18,7 +18,7 @@ from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 
 
-# ─── Default args ────────────────────────────────────────────────────────────
+#   Default args 
 DEFAULT_ARGS = {
     "owner": "data-engineering",
     "depends_on_past": False,
@@ -30,7 +30,7 @@ DEFAULT_ARGS = {
 }
 
 
-# ─── DAG definition ──────────────────────────────────────────────────────────
+#   DAG definition 
 with DAG(
     dag_id="nyc_taxi_pipeline",
     description="End-to-end NYC Taxi trip data pipeline",
@@ -42,9 +42,8 @@ with DAG(
     tags=["data-engineering", "nyc-taxi", "spark"],
 ) as dag:
 
-    # ── Task 1: Ingest raw data ──────────────────────────────────────────────
+    #   Task 1: Ingest raw data                ─
     def run_ingestion(**context):
-        """Download and land raw taxi trip CSV for the execution date."""
         from ingestion.ingest_taxi_data import TaxiDataIngestor
 
         execution_date = context["ds"]  # YYYY-MM-DD
@@ -55,7 +54,7 @@ with DAG(
         context["ti"].xcom_push(key="raw_row_count", value=result["row_count"])
         context["ti"].xcom_push(key="output_path", value=result["output_path"])
 
-        print(f"✅ Ingested {result['row_count']:,} rows → {result['output_path']}")
+        print(f"  Ingested {result['row_count']:,} rows → {result['output_path']}")
 
     ingest_task = PythonOperator(
         task_id="ingest_raw_data",
@@ -63,7 +62,7 @@ with DAG(
         provide_context=True,
     )
 
-    # ── Task 2: Validate schema ──────────────────────────────────────────────
+    #   Task 2: Validate schema                ─
     def run_validation(**context):
         """Validate ingested CSV against YAML schema contract."""
         from validation.schema_validator import SchemaValidator
@@ -83,7 +82,7 @@ with DAG(
                 f"See report: {report['report_path']}"
             )
 
-        print(f"✅ Validation passed — {report['warning_count']} warnings")
+        print(f"  Validation passed — {report['warning_count']} warnings")
         context["ti"].xcom_push(key="validation_report", value=report)
 
     validate_task = PythonOperator(
@@ -92,7 +91,7 @@ with DAG(
         provide_context=True,
     )
 
-    # ── Task 3: PySpark transform ────────────────────────────────────────────
+    #   Task 3: PySpark transform                
     spark_transform_task = BashOperator(
         task_id="spark_transform",
         bash_command=(
@@ -107,7 +106,7 @@ with DAG(
         ),
     )
 
-    # ── Task 4: Load to analytics DB ─────────────────────────────────────────
+    #   Task 4: Load to analytics DB               
     def run_duckdb_load(**context):
         """Load Parquet output into DuckDB for SQL analytics."""
         import duckdb
@@ -139,7 +138,7 @@ with DAG(
         ).fetchone()[0]
 
         con.close()
-        print(f"✅ Loaded {row_count:,} rows into DuckDB for {date}")
+        print(f" Loaded {row_count:,} rows into DuckDB for {date}")
 
     load_task = PythonOperator(
         task_id="load_to_duckdb",
@@ -147,7 +146,7 @@ with DAG(
         provide_context=True,
     )
 
-    # ── Task 5: Run analytics SQL ─────────────────────────────────────────────
+    #   Task 5: Run analytics SQL                
     run_analytics_task = BashOperator(
         task_id="run_analytics_queries",
         bash_command=(
@@ -155,7 +154,7 @@ with DAG(
         ),
     )
 
-    # ── DAG dependency graph ──────────────────────────────────────────────────
+    #   DAG dependency graph                  
     #
     #   ingest_raw_data
     #         │

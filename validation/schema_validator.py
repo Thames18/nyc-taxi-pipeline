@@ -51,7 +51,7 @@ class SchemaValidator:
         logger.info(f"Loading: {self.data_path}")
         return pd.read_csv(self.data_path, low_memory=False)
 
-    # ── Individual checks ────────────────────────────────────────────────────
+    #   Individual checks                  ─
 
     def _check_columns_exist(self, df: pd.DataFrame, schema: dict) -> None:
         expected = {col["name"] for col in schema["columns"]}
@@ -176,7 +176,7 @@ class SchemaValidator:
             except Exception as e:
                 logger.warning(f"Could not evaluate rule '{rule['name']}': {e}")
 
-    # ── Main validate method ─────────────────────────────────────────────────
+    #   Main validate method                 ─
 
     def validate(self) -> dict:
         """
@@ -238,7 +238,7 @@ class SchemaValidator:
         return report
 
 
-# ─── CLI entrypoint ───────────────────────────────────────────────────────────
+#   CLI entrypoint  
 if __name__ == "__main__":
     import argparse, sys
 

@@ -1,9 +1,7 @@
 """
 ingestion/ingest_taxi_data.py
 ==============================
-Downloads NYC Yellow Taxi trip data from the TLC public dataset
-and lands it as a raw CSV in the data lake raw layer.
-"""
+Downloads NYC Yellow Taxi trip data from the TLC public dataset """
 
 import os
 import logging
@@ -14,6 +12,9 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+DOWNLOAD_YEAR = 2024
+DOWNLOAD_MONTH = 1
+
 BASE_URL = (
     "https://d37ci6vzurychx.cloudfront.net/trip-data/"
     "yellow_tripdata_{year}-{month:02d}.parquet"
@@ -23,8 +24,7 @@ RAW_DATA_DIR = Path("data/raw")
 
 class TaxiDataIngestor:
     """
-    Downloads TLC Yellow Taxi trip data for a given date partition,
-    performs light cleaning, and writes it as a CSV to the raw layer.
+    Downloads TLC Yellow Taxi trip data,     performs light cleaning, and writes it as a CSV to the raw layer.
 
     Usage:
         ingestor = TaxiDataIngestor(execution_date="2024-01-15")
@@ -43,7 +43,6 @@ class TaxiDataIngestor:
         return BASE_URL.format(year=self.year, month=self.month)
 
     def _download_parquet(self, url: str, local_path: Path) -> None:
-        """Stream-download the parquet file to avoid loading it all in memory."""
         logger.info(f"Downloading: {url}")
         resp = requests.get(url, stream=True, timeout=120)
         resp.raise_for_status()
@@ -130,6 +129,6 @@ if __name__ == "__main__":
     parser.add_argument("--date", required=True, help="Execution date YYYY-MM-DD")
     args = parser.parse_args()
 
-    ingestor = TaxiDataIngestor(execution_date=args.date)
+    ingestor = TaxiDataIngestor(execution_date="2024-01-15")
     result = ingestor.run()
     print(f"\nDone: {result}")
