@@ -26,7 +26,7 @@ import random
 
 logger = logging.getLogger(__name__)
 
-# ── Pinned download target (TLC publishes ~2 months behind) ──────────────────
+#  Pinned download target (TLC publishes ~2 months behind) 
 DOWNLOAD_YEAR  = 2024
 DOWNLOAD_MONTH = 1
 FILTER_DAY     = 15          # day inside that month to slice for a manageable sample
@@ -63,7 +63,7 @@ class TaxiDataIngestor:
         self.output_path     = self.output_dir / "taxi_trips.csv"
         self.temp_parquet    = RAW_DATA_DIR / f"_tmp_{DOWNLOAD_YEAR}_{DOWNLOAD_MONTH:02d}.parquet"
 
-    # ── Download helpers ──────────────────────────────────────────────────────
+    #  Download helpers 
 
     def _build_url(self) -> str:
         return BASE_URL.format(year=self.download_year, month=self.download_month)
@@ -100,7 +100,7 @@ class TaxiDataIngestor:
         logger.info(f"Rows for {self.filter_date} from parquet: {len(result):,}")
         return result
 
-    # ── Synthetic data fallback ───────────────────────────────────────────────
+    #  Synthetic data fallback ─
 
     def _generate_synthetic(self) -> pd.DataFrame:
         """
@@ -145,7 +145,7 @@ class TaxiDataIngestor:
             "dropoff_location_id":   rng.integers(1, 266, n),
         })
 
-    # ── Column standardisation ────────────────────────────────────────────────
+    #  Column standardisation 
 
     def _clean_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         """Rename TLC columns to snake_case and keep schema-aligned subset."""
@@ -163,7 +163,7 @@ class TaxiDataIngestor:
         ]
         return df[[c for c in keep if c in df.columns]]
 
-    # ── Main entry point ──────────────────────────────────────────────────────
+    #  Main entry point 
 
     def run(self) -> dict:
         """
@@ -194,7 +194,7 @@ class TaxiDataIngestor:
         df.to_csv(self.output_path, index=False)
 
         logger.info(
-            f"✅ Wrote {len(df):,} rows ({source}) → {self.output_path}"
+            f" Wrote {len(df):,} rows ({source}) → {self.output_path}"
         )
         return {
             "row_count":   len(df),
@@ -203,7 +203,7 @@ class TaxiDataIngestor:
         }
 
 
-# ── CLI ───────────────────────────────────────────────────────────────────────
+#  CLI ─
 if __name__ == "__main__":
     import argparse
 
@@ -217,4 +217,4 @@ if __name__ == "__main__":
 
     ingestor = TaxiDataIngestor(execution_date=args.date)
     result   = ingestor.run()
-    print(f"\n✅ Done: {result}")
+    print(f"\n Done: {result}")
