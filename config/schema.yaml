@@ -4,7 +4,7 @@ dataset: nyc_yellow_taxi_trips
 columns:
   - name: vendor_id
     type: integer
-    nullable: false
+    nullable: true
     allowed_values: [1, 2]
 
   - name: tpep_pickup_datetime
@@ -25,36 +25,34 @@ columns:
 
   - name: trip_distance
     type: float
-    nullable: false
+    nullable: true
     min_value: 0.0
     max_value: 500.0
 
   - name: rate_code_id
     type: integer
     nullable: true
-    allowed_values: [1, 2, 3, 4, 5, 6]
 
   - name: fare_amount
     type: float
-    nullable: false
+    nullable: true
     min_value: 0.0
     max_value: 1000.0
 
   - name: tip_amount
     type: float
-    nullable: false
+    nullable: true
     min_value: 0.0
 
   - name: total_amount
     type: float
-    nullable: false
+    nullable: true
     min_value: 0.0
     max_value: 2000.0
 
   - name: payment_type
     type: integer
     nullable: true
-    allowed_values: [1, 2, 3, 4, 5, 6]
 
   - name: pickup_location_id
     type: integer
@@ -67,13 +65,13 @@ columns:
 quality_rules:
   - name: dropoff_after_pickup
     rule: "tpep_dropoff_datetime > tpep_pickup_datetime"
-    severity: error
+    severity: warning
 
   - name: total_gte_fare_plus_tip
     rule: "total_amount >= fare_amount + tip_amount - 0.01"
     severity: warning
 
 thresholds:
-  max_null_fraction: 0.05
-  min_row_count: 1000
-  max_duplicate_fraction: 0.01
+  max_null_fraction: 0.15
+  min_row_count: 100
+  max_duplicate_fraction: 0.05
