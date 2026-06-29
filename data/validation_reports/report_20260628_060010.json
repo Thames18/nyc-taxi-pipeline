@@ -1,0 +1,45 @@
+{
+  "status": "WARNED",
+  "error_count": 0,
+  "warning_count": 6,
+  "errors": [],
+  "warnings": [
+    {
+      "check": "min_value",
+      "column": "fare_amount",
+      "message": "930 rows below min 0.0 in 'fare_amount'",
+      "violation_count": 930
+    },
+    {
+      "check": "min_value",
+      "column": "tip_amount",
+      "message": "2 rows below min 0.0 in 'tip_amount'",
+      "violation_count": 2
+    },
+    {
+      "check": "min_value",
+      "column": "total_amount",
+      "message": "888 rows below min 0.0 in 'total_amount'",
+      "violation_count": 888
+    },
+    {
+      "check": "allowed_values",
+      "column": "vendor_id",
+      "message": "Unexpected values in 'vendor_id': [6]"
+    },
+    {
+      "check": "dropoff_after_pickup",
+      "message": "Rule 'dropoff_after_pickup' violated by 28 rows",
+      "violation_count": 28
+    },
+    {
+      "check": "total_gte_fare_plus_tip",
+      "message": "Rule 'total_gte_fare_plus_tip' violated by 888 rows",
+      "violation_count": 888
+    }
+  ],
+  "report_path": "data/validation_reports/report_20260628_060010.json",
+  "dataset": "data/raw/2026-06-27/taxi_trips.csv",
+  "schema_version": "1.0",
+  "validated_at": "2026-06-28T06:00:10.372537"
+}
